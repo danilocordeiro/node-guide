@@ -1,45 +1,24 @@
+const path = require('path');
+
 const express = require('express');
+const bodyParser = require('body-parser');
 
 const app = express();
 
-app.use(express.json());
+app.set('view engine', 'ejs');
+app.set('views', 'views');
+
+const adminData = require('./routes/admin');
+const shopRoutes = require('./routes/shop');
+
+app.use(bodyParser.urlencoded({extended: false}));
+app.use(express.static(path.join(__dirname, 'public')));
+
+app.use('/admin', adminData.routes);
+app.use(shopRoutes);
+
+app.use((req, res, next) => {
+    res.status(404).render('404', { pageTitle: 'Page Not Found', path: '' });
+});
 
 app.listen(3000);
-
-
-// (req, res) => {
-//   const url = req.url;
-//   const method = req.method;
-
-//   if(req.url === '/') {
-//     res.write('<html>')
-//     res.write('<body>')
-//     res.write('<h1>Hello</h1>');
-//     res.write('<form action="/create-user" method="POST"><input type="text" name="username" /><button type="submit">Send</button></form>')
-//     res.write('</body>')
-//     res.write('</html>')
-//     return res.end();
-//   }
-
-//   if(req.url === '/users') {
-//     res.write('<html>')
-//     res.write('<ul><li>User 1 </li></ul>');
-//     res.write('</html>')
-//     return res.end();
-//   }
-
-//   if(url === '/create-user' && method === 'POST') {
-//     const body = [];
-//     req.on('data', (chunk) => {
-//       body.push(chunk);
-//     });
-
-//     req.on('end', () => {
-//       const parseBody = Buffer.concat(body).toString();
-//       console.log(parseBody.split('=')[1]);
-//     });
-
-//     return res.end();
-//   }
-
-// })
